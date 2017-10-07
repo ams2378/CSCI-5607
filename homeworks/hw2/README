@@ -3,3 +3,26 @@ consisting of spheres lit by point light sources. Scenes will be described in a 
 parse text specification file. This is part 1 of a two-part assignment. In the second part you 
 will extend this raytracer to incorporate triangle meshes, more complex lighting, and other extensions 
 for more realistic images.
+
+Assignment Requirements:
+As this is a two-part assignment, Part 1 will be graded out of 50 pts. The number is front is how many points the feature is worth. Partial credit will be given to features that “mostly” work. The required minimum feature set is underlined.
+Scene Setup:
+(5) Camera placement, film resolution, aspect ratio (5) User specified background colors
+(5) UI + OpenGL output
+(5) BMP or PNG output
+    
+Primitives:
+(5) Spheres
+(5) Difference/Intersection of spheres (Constructive Solid Geometry)
+Lighting:
+(5) Ambient lights
+(5) Point light sources
+(5) Shadows
+(5) Multiple light sources (5) Directional light sources (5) Spot light sources
+Sampling:
+(5) Basic Sampling
+(5) Jittered Supersampling (5) Adaptive Supersampling (5) Motion Blur
+(5) Depth of Field
+Materials:
+(5) Color & Specularity (Phong Lighting Model)
+(5) Refraction (5) Reflection
