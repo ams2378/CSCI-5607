@@ -1,0 +1,20 @@
+This assignment is intended to be a gentle introduction to graphics programming. 
+The goal is to write a very simple application that uses the basic features of the OpenGL, 
+and some simple interaction with what is drawn on the screen. The application will draw a 
+single square in the center of a window, and should allow a user to resize, move and rotate 
+this square. The color of the square should optionally change based on the keyboard input.
+
+Basic Features (75 points):
+• Installing all libraries.
+• Drawing a square that moves when the user clicks a drags their mouse.
+Required Features (20 points):
+• (5) Translating only when the user drags on the square's interior (not the edge or outside the square)
+• (5) Scaling the square when the user drags on the edges
+• (10) Rotating the square when the user drags on the corners
+Extra Features:
+(5) Changing something visually when the user presses the keyboard (10) Texturing the square
+(10) Supporting both a square and triangle
+(5) Graphical indicator of what motion is being performed.
+(5) Animating the square on it’s own
+(5) Multiple squares
+(5) Maintaining the square’s shape when the window aspect ratio changes
