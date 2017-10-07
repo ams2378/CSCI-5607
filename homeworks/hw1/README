@@ -1,0 +1,29 @@
+In this assignment you will implement the basic methods involved in 2D graphics. 
+The focus will be mostly on implementing filters that take an input image, process it, 
+and produces a modified output image.
+
+
+What You Have To Do:
+The following is a list of features that you may implement (roughly by difficulty). The number in front corresponds to how many points the feature is worth:
+• (1) Brighten: This filter is done for you and you can use it as a starting point.
+• (3) Random noise: Add noise to an image.
+• (3) Crop: Extract a subimage specified by a corner and area.
+• (3) Extract Channel: Leave specified channel intact and set all others to zero.
+• (3) Contrast: Change the contrast of an image.
+• (3) Saturation: Change the saturation of an image.
+• (4) Sharpen: Sharpen an image by extrapolating from a blurred version.
+• (5) Quantize: Change the number of bits per channel of an image, using
+simple rounding.
+• (5) Random dither: Convert an image to a given number of bits per channel,
+using a randomized threshold.
+• (10) Blur: Blur an image by convolving it with a Gaussian low-pass filter.
+• (10) Edge detect: Detect edges in an image by convolving it with an edge
+detection kernel.
+• (10) Ordered dither: Convert an image to a given number of bits per channel,
+using a 4x4 ordered dithering matrix.
+• (10) Floyd-Steinberg dither: Convert an image to a given number of bits per
+channel, using dithering with error diffusion.
+• (10) Scale: Scale an image up or down in size by a real valued factor.
+• (10) Rotate: Rotate an image by a given angle.
+• (10) Fun: Warp an image using a non-linear mapping of your choice
+(examples are fisheye, sine, bulge, swirl).
