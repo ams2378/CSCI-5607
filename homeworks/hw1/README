@@ -2,7 +2,6 @@ In this assignment you will implement the basic methods involved in 2D graphics.
 The focus will be mostly on implementing filters that take an input image, process it, 
 and produces a modified output image.
 
-
 What You Have To Do:
 The following is a list of features that you may implement (roughly by difficulty). The number in front corresponds to how many points the feature is worth:
 • (1) Brighten: This filter is done for you and you can use it as a starting point.
