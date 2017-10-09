@@ -37,7 +37,7 @@
 
 using namespace std;
 
-CoOrdinate P0, P1, P2, P3; // FIXME 
+CoOrdinate P0, P1, P2, P3; // FIXME  global variable- not good!
 
 /*
 Intersection FindIntersection(Ray ray, Scene scene) {
@@ -125,20 +125,42 @@ bool FindIntersection(Ray ray, Scene scene) {
 Ray ConstructRayThroughPixel (Camera camera, int i, int j, int width, int height) {
 
   Ray newRay;
+  CoOrdinate Px1, Px2;
 
-  CoOrdinate Px, Py, Pz;
-
+  // Assuming sample point is in the middle of the pixel
   float offset = .5;
 
-  Py = P0 + (P1-P0) * (j+offset)/height;
-  Px = P2 + (P3-P2) * (i+offset)/width;
-  Pz = Vec(0, 0, -height / (2* tan(camera.ha)));  // FIXME FIXME 
+  /*
+    Interpolate pixel co-ordinate (i,j) from image plane to world space
+    using P0, P1, P2, P3
+   
+    P0 - top left
+    P1 - top right
+    P2 - bottom left
+    P3 - bottom right
 
-  CoOrdinate pixelCoord = Px + Py - Pz;
+       -----> i
+         P1     Px1           P1
+         - - - - x- - - - - - - 
+      |  |                    |
+      |  |                    |  
+    j |  |       x pixelCoord |    
+      v  |                    |   
+         - - - - x- - - - - - -   
+        P2      Px2           P3
+  */
 
+  Px1 = P0 + (P1-P0) * (i+offset)/width;
+  Px2 = P2 + (P3-P2) * (i+offset)/width;
+
+  CoOrdinate pixelCoord = Px1 + (Px2-Px1) * (j+offset)/height;
+
+  // Direction- from origin to pixel location
   Vec v = (pixelCoord-camera.origin);
+  // Normalize the direction to make math simple
   v.normalize();
 
+  // Set up Ray origin and direction
   newRay.origin = camera.origin;
   newRay.direction = v;
 
@@ -157,10 +179,10 @@ void /*Image*/ RayCast(Camera camera, Scene scene, int width, int height){
 
   CoOrdinate origin         = camera.origin;
   Vec viewingVec            = camera.direction;
-  Vec upVec                 = camera.up; //Vec (0,1,0);
+  Vec upVec                 = camera.up; 
   upVec.normalize();
   viewingVec.normalize();
-  Vec upVecCrossViewingVec  = cross(upVec, viewingVec); //Vec (1,0,0); // cross of up vector and viewingVec /?? 
+  Vec upVecCrossViewingVec  = cross(upVec, viewingVec); 
 
 
   // Find distance from camera origin to image plane- d
@@ -168,15 +190,28 @@ void /*Image*/ RayCast(Camera camera, Scene scene, int width, int height){
   // Find half angle on x plane- derived from aspect ratio
   float ha_x = atan (width/(2*d));  
 
-  // Find midpoints at top, bottom, left and right edge of image plane
-  // P0 - top
-  // P1 - bottom
-  // P2 - left
-  // P3 - right
-  P0 = origin + viewingVec * d + upVec * d * tan(camera.ha);
-  P1 = origin + viewingVec * d - upVec * d * tan(camera.ha);  
-  P2 = origin + viewingVec * d + upVecCrossViewingVec * d * tan(ha_x);
-  P3 = origin + viewingVec * d - upVecCrossViewingVec * d * tan(ha_x);
+  /*
+    Find four corners
+   
+    P0 - top left
+    P1 - top right
+    P2 - bottom left
+    P3 - bottom right
+
+     P1               P1
+      - - - - - - - - - 
+      |               |
+      |               |  
+      |               |    
+      |               |   
+      - - - - - - - - -   
+     P2               P3
+  */
+
+  P0 = origin + viewingVec * d + upVecCrossViewingVec * d * tan(ha_x) + upVec * d * tan(camera.ha);
+  P1 = origin + viewingVec * d - upVecCrossViewingVec * d * tan(ha_x) + upVec * d * tan(camera.ha);
+  P2 = origin + viewingVec * d + upVecCrossViewingVec * d * tan(ha_x) - upVec * d * tan(camera.ha);
+  P3 = origin + viewingVec * d - upVecCrossViewingVec * d * tan(ha_x) - upVec * d * tan(camera.ha);
 
 #ifdef EN_DEBUG0
   printf("------------P0 P1 P2 P3------------------\n");
@@ -221,7 +256,6 @@ void /*Image*/ RayCast(Camera camera, Scene scene, int width, int height){
   char* filename = "example.bmp";
   image->Write(filename);
   delete image;
-  //return image; 
 }
 
 
@@ -240,10 +274,9 @@ int main(int argc, char** argv){
 
   int readStatus = readInputFile(fileName);
 
-
   Camera camera;
   camera.origin = CoOrdinate(0,0,0);
-  camera.direction = Vec (1,0,-1); // - Z?
+  camera.direction = Vec (0,0,-1); // - Z?
   camera.up = Vec (0,1,0); // - Z?
 
   camera.origin.print();
@@ -252,10 +285,9 @@ int main(int argc, char** argv){
 
   Sphere sphere1;
 
-  sphere1.origin = CoOrdinate (120,-100,-height / (2* tan(camera.ha)) - 100 );
+  sphere1.origin = CoOrdinate (0,0,-height / (2* tan(camera.ha)) - 10 );
 
-  //sphere1.origin.x = sphere1.origin.y = sphere1.origin.z = 100;
-  sphere1.r = 50;
+  sphere1.r = 120;
 
   Scene scene;
   scene.sphere0 = sphere1;
