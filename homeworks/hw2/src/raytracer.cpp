@@ -32,7 +32,8 @@
 #include "stb_image_write.h"
 
 #define PI 3.1416
-#define EN_DEBUG 
+#define EN_DEBUG0 
+//#define EN_DEBUG 
 
 using namespace std;
 
@@ -157,7 +158,10 @@ void /*Image*/ RayCast(Camera camera, Scene scene, int width, int height){
   CoOrdinate origin         = camera.origin;
   Vec viewingVec            = camera.direction;
   Vec upVec                 = camera.up; //Vec (0,1,0);
+  upVec.normalize();
+  viewingVec.normalize();
   Vec upVecCrossViewingVec  = cross(upVec, viewingVec); //Vec (1,0,0); // cross of up vector and viewingVec /?? 
+
 
   // Find distance from camera origin to image plane- d
   float d = height / (2* tan(camera.ha));
@@ -174,7 +178,7 @@ void /*Image*/ RayCast(Camera camera, Scene scene, int width, int height){
   P2 = origin + viewingVec * d + upVecCrossViewingVec * d * tan(ha_x);
   P3 = origin + viewingVec * d - upVecCrossViewingVec * d * tan(ha_x);
 
-#ifdef EN_DEBUG
+#ifdef EN_DEBUG0
   printf("------------P0 P1 P2 P3------------------\n");
   printf("d %f \n", d); 
   printf("viewing vector \n");
@@ -239,7 +243,7 @@ int main(int argc, char** argv){
 
   Camera camera;
   camera.origin = CoOrdinate(0,0,0);
-  camera.direction = Vec (0,0,-1); // - Z?
+  camera.direction = Vec (1,0,-1); // - Z?
   camera.up = Vec (0,1,0); // - Z?
 
   camera.origin.print();
