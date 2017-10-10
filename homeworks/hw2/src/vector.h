@@ -32,6 +32,8 @@ Vec operator/ (const Vec& p, double f);
 
 Vec cross (const Vec& p, const Vec& q);
 
+Vec dot (const Vec& p, const Vec& q);
+
 typedef Vec CoOrdinate;
 
 

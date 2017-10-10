@@ -9,7 +9,6 @@ Vec operator+ (const Vec& p, const Vec& q)
     return Vec(p.x+q.x, p.y+q.y, p.z+q.z);
 }
 
-
 Vec operator- (const Vec& p, const Vec& q)
 {
     return Vec(p.x-q.x, p.y-q.y, p.z-q.z);
@@ -40,7 +39,18 @@ Vec cross (const Vec& p, const Vec& q) {
     uvk = p.x * q.y - q.x * p.y;
 
     return Vec(uvi, uvj, uvk);
+}
 
+
+Vec dot (const Vec& p, const Vec& q) {
+
+	/*
+		a · b = ax × bx + ay × by
+	*/
+
+	float dotProduct = p.x * q.x + p.y * q.y + p.z * q.z;
+
+    return dotProduct;
 }
 
 void Vec::normalize(){
