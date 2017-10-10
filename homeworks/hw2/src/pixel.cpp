@@ -4,7 +4,6 @@
 #include <stdlib.h>
 
 
-
 /**
  * Component
  **/
@@ -24,7 +23,6 @@ Component ComponentLerp(Component c, Component d, double t)
 {
     return ComponentClamp((int) floor((1.0 - t) * c + t * d + 0.5));
 }
-
 
 
 /**

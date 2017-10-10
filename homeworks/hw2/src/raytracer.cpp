@@ -20,10 +20,11 @@
 #include <cstring>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "fileParser.h"
 #include "image.h"
-#include "dataStructure.h"
+#include "datastructure.h"
 
 #define STB_IMAGE_IMPLEMENTATION //only place once in one .cpp file
 #include "stb_image.h"
@@ -31,7 +32,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION //only place once in one .cpp files
 #include "stb_image_write.h"
 
-#define PI 3.1416
+//#define PI 3.1416
 #define EN_DEBUG0 
 //#define EN_DEBUG 
 
@@ -148,10 +149,12 @@ Ray ConstructRayThroughPixel (Camera camera, int i, int j, int width, int height
       v  |                    |   
          - - - - x- - - - - - -   
         P2      Px2           P3
+
+    First find Px1 and Px2 and then interpolate pixelCoord
   */
 
-  Px1 = P0 + (P1-P0) * (i+offset)/width;
-  Px2 = P2 + (P3-P2) * (i+offset)/width;
+  Px1 = P1 + (P0-P1) * (i+offset)/width;
+  Px2 = P3 + (P2-P3) * (i+offset)/width;
 
   CoOrdinate pixelCoord = Px1 + (Px2-Px1) * (j+offset)/height;
 
@@ -175,18 +178,18 @@ Ray ConstructRayThroughPixel (Camera camera, int i, int j, int width, int height
   return newRay;
 }
 
-void /*Image*/ RayCast(Camera camera, Scene scene, int width, int height){ 
+void /*Image*/ RayCast(Setup setup, Scene scene, int width, int height){ 
 
-  CoOrdinate origin         = camera.origin;
-  Vec viewingVec            = camera.direction;
-  Vec upVec                 = camera.up; 
+  CoOrdinate origin         = setup.camera.origin;
+  Vec viewingVec            = setup.camera.direction;
+  Vec upVec                 = setup.camera.up; 
   upVec.normalize();
   viewingVec.normalize();
   Vec upVecCrossViewingVec  = cross(upVec, viewingVec); 
 
 
   // Find distance from camera origin to image plane- d
-  float d = height / (2* tan(camera.ha));
+  float d = height / (2* tan(setup.camera.ha));
   // Find half angle on x plane- derived from aspect ratio
   float ha_x = atan (width/(2*d));  
 
@@ -208,13 +211,15 @@ void /*Image*/ RayCast(Camera camera, Scene scene, int width, int height){
      P2               P3
   */
 
-  P0 = origin + viewingVec * d + upVecCrossViewingVec * d * tan(ha_x) + upVec * d * tan(camera.ha);
-  P1 = origin + viewingVec * d - upVecCrossViewingVec * d * tan(ha_x) + upVec * d * tan(camera.ha);
-  P2 = origin + viewingVec * d + upVecCrossViewingVec * d * tan(ha_x) - upVec * d * tan(camera.ha);
-  P3 = origin + viewingVec * d - upVecCrossViewingVec * d * tan(ha_x) - upVec * d * tan(camera.ha);
+  P0 = origin + viewingVec * d + upVecCrossViewingVec * d * tan(ha_x) + upVec * d * tan(setup.camera.ha);
+  P1 = origin + viewingVec * d - upVecCrossViewingVec * d * tan(ha_x) + upVec * d * tan(setup.camera.ha);
+  P2 = origin + viewingVec * d + upVecCrossViewingVec * d * tan(ha_x) - upVec * d * tan(setup.camera.ha);
+  P3 = origin + viewingVec * d - upVecCrossViewingVec * d * tan(ha_x) - upVec * d * tan(setup.camera.ha);
 
 #ifdef EN_DEBUG0
   printf("------------P0 P1 P2 P3------------------\n");
+  printf("half angle %f \n", setup.camera.ha);
+  printf("width height %d %d \n", width, height);
   printf("d %f \n", d); 
   printf("viewing vector \n");
   viewingVec.print();
@@ -230,13 +235,26 @@ void /*Image*/ RayCast(Camera camera, Scene scene, int width, int height){
 #endif
 
   Image* image = new Image(width, height);
+
+  Pixel background;
+
+  // set background
+  for (int i = 0; i < width; i++) {
+    for (int j = 0; j < height; j++) {
+      background.r = setup.background.x;
+      background.g = setup.background.y;
+      background.b = setup.background.z;
+      image->SetPixel(i,j,background);
+    }
+  }
+
   Pixel p0, p1; 
   for (int i = 0; i < width; i++) {
     for (int j = 0; j < height; j++) {
-      p0.r = p0.g = p0.b = 0;
+      p0.r = p0.g = p0.b = 100;
       p1.r = p1.g = p1.b = 100;
       
-      Ray ray = ConstructRayThroughPixel(camera, i, j, width, height); 
+      Ray ray = ConstructRayThroughPixel(setup.camera, i, j, width, height); 
 
       if (FindIntersection(ray, scene)) { // intersects
 #ifdef EN_DEBUG
@@ -247,7 +265,7 @@ void /*Image*/ RayCast(Camera camera, Scene scene, int width, int height){
 #ifdef EN_DEBUG
         printf("intersect false\n");
 #endif
-        image->SetPixel(i,j,p1);
+       // image->SetPixel(i,j,p1);
       }
     }   
   }
@@ -267,34 +285,21 @@ int main(int argc, char** argv){
   //   exit(0);
   //}
 
-  int width = 300; //64;
-  int height = 300; //48;
-
   string fileName = argv[1];
 
-  int readStatus = readInputFile(fileName);
+  Setup setup = readInputFile(fileName);
 
-  Camera camera;
-  camera.origin = CoOrdinate(0,0,0);
-  camera.direction = Vec (0,0,-1); // - Z?
-  camera.up = Vec (0,1,0); // - Z?
-
-  camera.origin.print();
-
-  camera.ha = 45 * (PI/180);
+  int width = setup.res.height; //64;
+  int height = setup.res.width; //48;
 
   Sphere sphere1;
-
-  sphere1.origin = CoOrdinate (0,0,-height / (2* tan(camera.ha)) - 10 );
-
-  sphere1.r = 120;
+  sphere1.origin = CoOrdinate(3, 1.5, 0); //   CoOrdinate (0,0,-height / (2* tan(setup.camera.ha)) - 10 );
+  sphere1.r = 1.25;
 
   Scene scene;
   scene.sphere0 = sphere1;
 
-
-  RayCast (camera, scene, width, height);
-
+  RayCast (setup, scene, width, height);
 
   return 0;
 }
