@@ -7,10 +7,10 @@ Checkpoint 1 progress
 	- max number of spheres is capped to 50
 	- spot light, directional light and other advanced feature not supported
 	- lighting is not perfect- need to spend more time debugging. Most probably some normal calc is a bit off.
+	- optimize the data structure and code
 
 How to run?
-
-- $make build
+- $ make build
 - $ ./a.out <scn_filename> # Ex: ./a.out spheres1.scn
 
 Files
