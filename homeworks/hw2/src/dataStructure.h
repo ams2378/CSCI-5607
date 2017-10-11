@@ -1,49 +1,13 @@
+#ifndef DS_INCLUDED
+#define DS_INCLUDED
 
 #include "vector.h"
+#include <fstream>
+#include <cstring>
 
-/*
-typedef CoOrdinate vector;
+#define PI 3.1416
 
-class CoOrdinate {
-
-	public:
-		float x;
-		float y;
-		float z;
-
-	public:
-		CoOrdinate (float m_x, float m_y, float m_z);
-
-		~CoOrdinate ();
-
-		CoOrdinate add (CoOrdinate addand) {
-			CoOrdinate newCoord = new (x+addand.x, y+addand.y, z+addand.z);
-			return newCoord;
-		}
-
-		CoOrdinate sub (CoOrdinate addand) {
-			CoOrdinate newCoord = new (x-addand.x, y-addand.y, z-addand.z);
-			return newCoord;
-		}
-
-		CoOrdinate mult (float mult) {
-			CoOrdinate newCoord = new (x*mult, y*mult, z*mult);
-			return newCoord;
-		}
-
-		void normalize () {
-			float val = sqrt(x*x + y*y + z*z);
-			x /= val;
-			y /= val;
-			z /= val;
-		}
-
-		float val (CoOrdinate v) {
-			float val = sqrt(x*x + y*y + z*z);
-			return val;
-		}
-};
-*/
+using namespace std;
 
 /*
 	Camera :
@@ -61,20 +25,94 @@ struct Camera {
 	float		ha;
 };
 
+struct  Resolution {
+	int height;
+	int width;
+};
+
+struct Setup {
+	Camera 		camera;
+	Resolution 	res;
+	CoOrdinate 	background;
+	string    	outfile;
+	int 		max_depth;
+};
 
 struct Ray {
 	CoOrdinate	origin;
 	CoOrdinate	direction;
 };
 
+
+struct Material {
+	CoOrdinate 	ambient;
+	CoOrdinate 	diffuse;
+	CoOrdinate 	specular;
+	float 		ns;
+	CoOrdinate	transmissive;
+	float		ior;
+
+	void print();
+};
+
+
 struct Sphere {
 	CoOrdinate	origin;
 	float	 	r;
+
+	Material	material;
+};
+
+
+struct Intersection {
+	CoOrdinate	intersection;
+	int         objectNumber;
+	bool		hit;
+	float     	t;
+};
+
+//typedef CoOrdinate Intersection;
+
+
+// Light sources
+
+struct DirectionalLight {
+	CoOrdinate 	color;
+	Vec 		location;
+
+    // Constructor
+    DirectionalLight (CoOrdinate x_=CoOrdinate(0,0,0), Vec y_=Vec(0,0,0)) : color(CoOrdinate(x_)), location(Vec(y_)) {}
+};
+
+typedef DirectionalLight PointLight;
+typedef CoOrdinate AmbientLight;
+
+struct SpotLight {
+	CoOrdinate 	color;
+	CoOrdinate 	location;
+	Vec 		direction;
+	float		angle1;
+	float		angle2;
+
+	// Constructor
+    SpotLight (CoOrdinate x_=CoOrdinate(0,0,0), Vec y_=Vec(0,0,0), Vec z_=Vec(0,0,0), float angle1_=0, float angle2_=0) : 
+    color(CoOrdinate(x_)), location(CoOrdinate(y_)), direction(Vec(z_)), angle1(angle1_), angle2(angle2_) {}
+};
+
+struct Light {
+	DirectionalLight 	dirLight;
+	SpotLight			spotLight;
+	PointLight			pointLight;
+	AmbientLight		ambientLight;
 };
 
 
 struct Scene {
-	Sphere	sphere0;
+	Sphere 	sphere0[50];
+	int     numSpheres;
+	Light   light;
 };
 
-typedef CoOrdinate Intersection;
+#endif
+
+
