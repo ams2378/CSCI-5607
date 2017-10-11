@@ -34,86 +34,17 @@
 
 //#define PI 3.1416
 #define EN_DEBUG0 
+//#define LIGHT_OFF
 //#define EN_DEBUG 
 
 using namespace std;
 
 CoOrdinate P0, P1, P2, P3; // FIXME  global variable- not good!
 
-/*
-Intersection FindIntersection(Ray ray, Scene scene) {
 
-  Intersection newCoord;
-
-  return newCoord;
+float clamp (float p) {
+  return (p < 0 ? 0 : (p > 255 ? 255 : p));
 }
-*/
-
-/*
-Intersection discriminant (Ray ray, Scene scene) {
-
-  float X0, Y0, Z0;       // Origin
-  float Xd, Yd, Zd;       // Direction
-  float Xc, Yc, Zc, Sr;   // Sphere center and redius
-  float Xi, Yi, Zi;       // Intersection point on sphere
-
-  X0 = ray.origin.x;
-  Y0 = ray.origin.y;
-  Z0 = ray.origin.z;
-
-  Xd = ray.direction.x;
-  Yd = ray.direction.y;
-  Zd = ray.direction.z;
-
-  Xc = scene.sphere0[0].origin.x;
-  Yc = scene.sphere0[0].origin.y;
-  Zc = scene.sphere0[0].origin.z;
-  Sr = scene.sphere0[0].r;
-
-  //printf("sphere origin \n");
-  //scene.sphere0[0].origin.print();
-  //printf("sphere radius %f \n", scene.sphere0[0].r);
-
-  float A = 1; // Xd*Xd + Yd*Yd + Zd*Zd
-  float B = 2 * (Xd * (X0 - Xc) + Yd * (Y0 - Yc) + Zd * (Z0 - Zc));
-  float C = (X0 - Xc)*(X0 - Xc) + (Y0 - Yc)*(Y0 - Yc) + (Z0 - Zc)*(Z0 - Zc) - Sr*Sr;
-
-  float dis = B*B - 4*A*C;
-
-  float t0 = (-B - sqrt(dis))/(2*A);
-  float t1 = (-B + sqrt(dis))/(2*A);
-
-#ifdef EN_DEBUG
-  printf("ray origin X Y Z %f %f %f\n", X0, Y0, Z0);
-  printf("ray direction X Y Z %f %f %f\n", Xd, Yd, Zd);
-  printf("sphere Xc Yc Zc Sr %f %f %f %f\n", Xc, Yc, Zc, Sr);
-  printf("dis %f \n", dis);
-#endif
-
-  // Find the smallest t
-  float t = t0 < t1 ? t0 : t1;
-
-  // find intersection point
-  Xi = X0 + Xd * t;
-  Yi = Y0 + Yd * t;
-  Zi = Z0 + Zd * t;
-
-  CoOrdinate intersectionPoint = CoOrdinate (Xi, Yi, Zi);
-
-  Intersection intersect;
-  intersect.intersection = intersectionPoint;
-  intersect.objectNumber = 0; // FIXME
-
-  if (dis < 0) {
-    intersect.hit = false;
-  } else { 
-    intersect.hit = true;
-  }
-
-  return intersect;
-
-}
-*/
 
 /*
 
@@ -143,8 +74,7 @@ Intersection discriminant (Ray ray, Scene scene) {
 
 */
 
-Intersection /*FindIntersection*/ IntersectMath (Ray ray, Scene scene, int i) {
-//Intersection FindIntersection(Ray ray, Scene scene, int i) {
+Intersection IntersectMath (Ray&  ray, Scene& scene, int i) {
 
   float X0, Y0, Z0;       // Origin
   float Xd, Yd, Zd;       // Direction
@@ -163,10 +93,6 @@ Intersection /*FindIntersection*/ IntersectMath (Ray ray, Scene scene, int i) {
   Yc = scene.sphere0[i].origin.y;
   Zc = scene.sphere0[i].origin.z;
   Sr = scene.sphere0[i].r;
-
-  //printf("sphere origin \n");
-  //scene.sphere0[0].origin.print();
-  //printf("sphere radius %f \n", scene.sphere0[0].r);
 
   float A = Xd*Xd + Yd*Yd + Zd*Zd;
   float B = 2 * (Xd * (X0 - Xc) + Yd * (Y0 - Yc) + Zd * (Z0 - Zc));
@@ -192,14 +118,11 @@ Intersection /*FindIntersection*/ IntersectMath (Ray ray, Scene scene, int i) {
   Yi = Y0 + Yd * t;
   Zi = Z0 + Zd * t;
 
-  CoOrdinate intersectionPoint = CoOrdinate (Xi, Yi, Zi);
-
   Intersection intersect;
-  intersect.intersection = intersectionPoint;
-  intersect.objectNumber = 0; // FIXME
+  intersect.intersection = CoOrdinate (Xi, Yi, Zi);;
+  intersect.objectNumber = i; 
   intersect.t = t;
 
-  //if (dis < 0) {
   if (t >= 0) {
     intersect.hit = true;
   } else { 
@@ -209,6 +132,7 @@ Intersection /*FindIntersection*/ IntersectMath (Ray ray, Scene scene, int i) {
   return intersect;
 }
 
+// Find intersection with the objects 
 Intersection FindIntersection(Ray ray, Scene scene) {
 
     Intersection t, currentIntersect;
@@ -217,18 +141,15 @@ Intersection FindIntersection(Ray ray, Scene scene) {
 
     for (int i=0; i<scene.numSpheres; i++) {
       t = IntersectMath (ray, scene, i);
-      //return t;
-      //printf("num of sphere processing now %d \n", i);
 
       if (t.hit) {
         // hit-> compare with previous hit
         if (t.t < currentDistance) {
-          // save the distance
-          // currentDistance = t.t;
           currentIntersect.intersection = CoOrdinate(t.intersection.x, t.intersection.y, t.intersection.z);
           currentIntersect.objectNumber = t.objectNumber;
           currentIntersect.hit = t.hit;
           currentIntersect.t = t.t;
+          currentDistance = t.t;
         } 
       }  
     }
@@ -293,41 +214,109 @@ Ray ConstructRayThroughPixel (Camera camera, int i, int j, int width, int height
   return newRay;
 }
 
+
+CoOrdinate ambientColor(CoOrdinate lightColor, CoOrdinate materialColor) {
+
+    float r, g, b;
+
+    return CoOrdinate(materialColor.x * lightColor.x, 
+                      materialColor.y * lightColor.y, 
+                      materialColor.z * lightColor.z);
+
+}
+
+//  (kd*dotProduct*R, kd*dotProduct*G, kd*dotProduct*B)
+CoOrdinate diffuseColor(CoOrdinate lightColor, CoOrdinate materialColor, float dotProduct) {
+
+  float r, g, b;
+
+  r = lightColor.x * dotProduct * materialColor.x; 
+  g = lightColor.y * dotProduct * materialColor.y; 
+  b = lightColor.z * dotProduct * materialColor.z; 
+
+  return CoOrdinate(r,g,b);
+
+}
+
+// ks*lightSourceColor*surfaceColor*(RDotV^n)
+CoOrdinate specularColor (CoOrdinate lightColor, CoOrdinate materialColor, float ns, float vDotR) {
+
+  float r, g, b;
+
+  r = lightColor.x * materialColor.x * pow(vDotR, ns); 
+  g = lightColor.y * materialColor.y * pow(vDotR, ns);
+  b = lightColor.z * materialColor.z * pow(vDotR, ns);
+
+  return CoOrdinate(r,g,b);
+}
+
 // Return color of the pixel
-Pixel getColor(Intersection intersect, Scene& scene) {
+Pixel getColor(Intersection& intersect, Scene& scene, Camera& camera) {
 
-  Pixel p0; // FIXME
-  p0.r = p0.g = p0.b = 100;
+  Pixel p; // FIXME
+  CoOrdinate ambient, diffuse, specular, finalColor;
+  Vec intersectToLight, surfaceNormal, v, r;
+  float vDotR, surfaceNormalDotIntersectToLight;
 
-/*
+  int objectNumber = intersect.objectNumber;
+
   // Ambient
-  ambient = ambientColor(scene.light.ambientLight.color, scene.sphere0[0].material.ambient);
+  ambient = ambientColor(scene.light.ambientLight, scene.sphere0[objectNumber].material.ambient);
 
-
-  // Diffuse/ point light
+  // Diffuse shading
   intersectToLight = scene.light.pointLight.location - intersect.intersection;
-  intersectToLight.normalize();
+  intersectToLight.normalize(); // L
 
-  surfaceNormal = intersect.intersection - scene.sphere0[0].origin;
-  surfaceNormal.normalize();
+  surfaceNormal = intersect.intersection - scene.sphere0[objectNumber].origin;
+  surfaceNormal.normalize(); // N
 
-  surfaceNormalDotIntersectToLight = dot(surfaceNormal, intersectToLight);
-  surfaceNormalDotIntersectToLight = surfaceNormalDotIntersectToLight < 0 ? 0 : (surfaceNormalDotIntersectToLight > 255 ? 255 : surfaceNormalDotIntersectToLight); 
-  diffuseColor = = diffuseColor(scene.light.pointLight.color, scene.sphere0[0].material.diffuse, surfaceNormalDotIntersectToLight);
+  surfaceNormalDotIntersectToLight = dot(surfaceNormal, intersectToLight); 
+  surfaceNormalDotIntersectToLight = clamp(surfaceNormalDotIntersectToLight); 
+  diffuse = diffuseColor(scene.light.pointLight.color, scene.sphere0[objectNumber].material.diffuse, surfaceNormalDotIntersectToLight);
 
-
-  // Phong/ spot
+  // Specular
   // R =  2(n.v)n - v
-  v = intersect.intersection - scene.camera.origin;
+  v = intersect.intersection - camera.origin;
   v.normalize();
-  R = 2 * (dot(surfaceNormal, v)) * surfaceNormal - v;
+  r = surfaceNormal * 2 * (dot(surfaceNormal, v)) - v;
+  vDotR = dot (v, r);
 
-  phong  = phongColor(scene.light.spotLight.color, scene.sphere0[0].material.specular, scene.sphere0[0].material.ns);
+  specular  = specularColor(scene.light.pointLight.color, scene.sphere0[0].material.specular, scene.sphere0[0].material.ns, vDotR);
 
-  finalColor = ambient + diffuse + phong;
-  */
+  // add ambient, diffuse and specular color to get final pixel color
+  finalColor = ambient + diffuse + specular; 
 
-  return p0;
+  // unbias
+  p.r = clamp(finalColor.x * 255);
+  p.g = clamp(finalColor.y * 255);
+  p.b = clamp(finalColor.z * 255);
+
+#ifdef EN_DEBUG
+  printf("Point light color and location \n");
+  scene.light.pointLight.color.print();
+  scene.light.pointLight.location.print();
+  printf("Sphere origin \n");
+  scene.sphere0[objectNumber].origin.print();
+  printf("surfaceNormal\n");
+  surfaceNormal.print();
+  if (intersect.hit) printf("HIT\n");
+  printf("surfaceNormalDotIntersectToLight %f \n", surfaceNormalDotIntersectToLight);
+
+  printf("ambient color\n");
+  ambient.print();
+
+  printf("diffuse color\n");
+  diffuse.print(); 
+
+  printf("final color \n");
+  finalColor.print(); 
+#endif
+
+#ifdef LIGHT_OFF
+  p.r = p.g = p.b = 100;
+#endif
+
+  return p;
 
 }
 
@@ -404,15 +393,14 @@ void /*Image*/ RayCast(Setup setup, Scene scene, int width, int height){
   // set background
   for (int i = 0; i < width; i++) {
     for (int j = 0; j < height; j++) {
-      background.r = setup.background.x;
-      background.g = setup.background.y;
-      background.b = setup.background.z;
+      background.r = setup.background.x * 255;
+      background.g = setup.background.y * 255;
+      background.b = setup.background.z * 255;
       image->SetPixel(i,j,background);
     }
   }
 
-  Pixel p0, pixelColor; // FIXME
-  p0.r = p0.g = p0.b = 100;
+  Pixel pixelColor; // FIXME
   for (int i = 0; i < width; i++) {
     for (int j = 0; j < height; j++) {
       
@@ -420,9 +408,9 @@ void /*Image*/ RayCast(Setup setup, Scene scene, int width, int height){
       Ray ray = ConstructRayThroughPixel(setup.camera, i, j, width, height); 
       // Find intersection using the ray equation and object in scene
       Intersection intersect = FindIntersection(ray, scene);
-      //Intersection intersect = IntersectMath(ray, scene, 0);
       // Shading- get color
-      pixelColor = getColor(intersect, scene);
+      pixelColor = getColor(intersect, scene, setup.camera);
+      //printf("final pixel color %d %d %d \n", (int)pixelColor.r, (int)pixelColor.g, (int)pixelColor.b);
       // Update the pixel color if it hit an object
       if (intersect.hit) 
         image->SetPixel(i,j,pixelColor);      
@@ -438,9 +426,11 @@ void /*Image*/ RayCast(Setup setup, Scene scene, int width, int height){
   }
 
   // save image file
-  char* filename = "example.bmp";
-  image->Write(filename);
+  char* filename = new char[setup.outfile.length() + 1];
+  std::strcpy(filename, setup.outfile.c_str());
+  image->Write(filename); //filename);
   delete image;
+  delete[] filename;
 }
 
 
@@ -477,6 +467,24 @@ int main(int argc, char** argv){
   }
 
   RayCast (setup, scene, width, height);
+
+/*
+  Image* image2 = new Image(width, height);
+  Pixel background;
+  // set background
+  for (int i = 0; i < width; i++) {
+    for (int j = 0; j < height; j++) {
+      background.r = 100;
+      background.g = 0;
+      background.b = 0;
+      image2->SetPixel(i,j,background);
+    }
+  } 
+
+  char* filename = "example2.bmp";
+  image2->Write(filename);
+  delete image2;
+*/
 
   return 0;
 }

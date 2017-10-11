@@ -42,7 +42,7 @@ Vec cross (const Vec& p, const Vec& q) {
 }
 
 
-Vec dot (const Vec& p, const Vec& q) {
+float dot (const Vec& p, const Vec& q) {
 
 	/*
 		a · b = ax × bx + ay × by
