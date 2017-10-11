@@ -281,7 +281,7 @@ Pixel getColor(Intersection& intersect, Scene& scene, Camera& camera) {
   r = surfaceNormal * 2 * (dot(surfaceNormal, v)) - v;
   vDotR = dot (v, r);
 
-  specular  = specularColor(scene.light.pointLight.color, scene.sphere0[0].material.specular, scene.sphere0[0].material.ns, vDotR);
+  specular  = specularColor(scene.light.pointLight.color, scene.sphere0[objectNumber].material.specular, scene.sphere0[objectNumber].material.ns, vDotR);
 
   // add ambient, diffuse and specular color to get final pixel color
   finalColor = ambient + diffuse + specular; 
