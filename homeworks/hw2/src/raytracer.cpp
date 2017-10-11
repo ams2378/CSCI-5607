@@ -271,7 +271,7 @@ Pixel getColor(Intersection& intersect, Scene& scene, Camera& camera) {
   surfaceNormal.normalize(); // N
 
   surfaceNormalDotIntersectToLight = dot(surfaceNormal, intersectToLight); 
-  surfaceNormalDotIntersectToLight = clamp(surfaceNormalDotIntersectToLight); 
+  surfaceNormalDotIntersectToLight = surfaceNormalDotIntersectToLight < 0 ? 0 : surfaceNormalDotIntersectToLight; //clamp(surfaceNormalDotIntersectToLight); 
   diffuse = diffuseColor(scene.light.pointLight.color, scene.sphere0[objectNumber].material.diffuse, surfaceNormalDotIntersectToLight);
 
   // Specular
