@@ -468,24 +468,6 @@ int main(int argc, char** argv){
 
   RayCast (setup, scene, width, height);
 
-/*
-  Image* image2 = new Image(width, height);
-  Pixel background;
-  // set background
-  for (int i = 0; i < width; i++) {
-    for (int j = 0; j < height; j++) {
-      background.r = 100;
-      background.g = 0;
-      background.b = 0;
-      image2->SetPixel(i,j,background);
-    }
-  } 
-
-  char* filename = "example2.bmp";
-  image2->Write(filename);
-  delete image2;
-*/
-
   return 0;
 }
 
