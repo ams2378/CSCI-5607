@@ -171,7 +171,7 @@ void readInputFile (string fileName, Scene& scene, Setup& setup) {
        printf("vertex1- ");  vertices[v1].print();
        printf("vertex2- ");  vertices[v2].print();
     }
-    else if (command == "normal triangle") { 
+    else if (command == "normal_triangle") { 
        int v0,v1,v2;
        input >> v0 >> v1 >> v2;
 
