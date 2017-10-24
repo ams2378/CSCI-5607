@@ -1,0 +1,22 @@
+
+
+Checkpoint 1 progress
+
+- Limitation of current implementation:
+	- only support spheres
+	- max number of spheres is capped to 50
+	- spot light, directional light and other advanced feature not supported
+	- lighting is not perfect- need to spend more time debugging. Most probably some normal calc is a bit off.
+	- optimize the data structure and code
+
+How to run?
+- $ make build
+- $ ./a.out <scn_filename> # Ex: ./a.out spheres1.scn
+
+Files
+	- raytracer.cpp 	- implements the math and algo for ray tracing
+	- fileparser.h/cpp 	- implements function to parse input file format
+	- datastructure.h/cpp   - defines some simple data structures (coordinate, vector, light etc...)
+	- image.h/cpp    	- provides image manipulation methods (read, write, create new image etc)
+	- pixel.h/cpp 		- implements pixel data strcture and relavent functions (used by image.cpp)
+	- std_image_*.h 	- lib to aid image processing

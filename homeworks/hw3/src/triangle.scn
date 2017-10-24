@@ -1,0 +1,17 @@
+camera 0 0 0 0 0 -1 0 1 0 45
+
+background 0 .25 0
+max_vertices 3
+
+vertex -12 -12 -1
+vertex -12 12 -1
+vertex 12 -12 -1
+
+material 1 0 0 1 0 0 .3 .3 .3 32 .2 .2 .2 1.5
+#sphere 0 0 -30 3 
+
+#vertex -15 -15 10
+#vertex 15 15 10
+#vertex -15 15 10
+
+triangle 2 1 0

@@ -1,0 +1,20 @@
+#Simple Sphere Sceen
+camera 0 0 0 0 0 -1 0 1 0 45
+output_image tri.bmp
+
+max_vertices 3
+
+vertex 0 0 -50
+vertex 10 0 -50
+vertex 10 50 -50
+
+triangle 0 1 2
+
+#white overhead light
+#point_light 10 10 10 0 5 0
+point_light 1 1 1 0 5 0
+ambient_light .25 .25 .25
+background .05 .05 .05
+#background 1 1 1
+
+max_depth 5
