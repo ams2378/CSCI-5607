@@ -28,7 +28,6 @@ float timePast = 0;
 //You should have a representation for the state of each object
 float objx=0, objy=-1.4, objz=0.8;
 
-
 bool DEBUG_ON = true;
 GLuint InitShader(const char* vShaderFileName, const char* fShaderFileName);
 bool fullscreen = false;
@@ -228,7 +227,7 @@ int main(int argc, char *argv[]){
 		/***********************************************************************************/			
 		
 		glm::mat4 view = glm::lookAt(
-		glm::vec3(3.f, 0.f, 0.f),  		//Cam Position  (this should change as user moves camera)
+		glm::vec3(3.f+objx, 0.f, 0.f),  		//Cam Position  (this should change as user moves camera)
 		glm::vec3(0.0f, 0.0f, 0.0f),  	//Look at point
 		glm::vec3(0.0f, 0.0f, 1.0f)); 	//Up
 		
