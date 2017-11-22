@@ -1,0 +1,17 @@
+Getting Started:
+
+The goal of this assignment is to make an interactive 3D game using OpenGL with the programmable pipeline.
+
+Map Format:
+The map stores the world as a rectilinear map. The first row is width and height. The player will start at the point marked S 
+and must reach the point marked G to finish the level. The player’s progress may be hindered by walls (marked W) and doors 
+(marked with a capital letter A-E). Throughout the environment will be keys (marked with a lowercase a-e). A player may not cross 
+through a door unless they have picked up the corresponding key. A player may never cross a wall.Getting Started:
+
+The goal of this assignment is to make an interactive 3D game using OpenGL with the programmable pipeline.
+
+Map Format:
+The map stores the world as a rectilinear map. The first row is width and height. The player will start at the point marked S 
+and must reach the point marked G to finish the level. The player’s progress may be hindered by walls (marked W) and doors 
+(marked with a capital letter A-E). Throughout the environment will be keys (marked with a lowercase a-e). A player may not cross 
+through a door unless they have picked up the corresponding key. A player may never cross a wall.
